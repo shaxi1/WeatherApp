@@ -61,6 +61,12 @@ public class Weather {
 
     public static class Main {
         private Double temp;
+        private Double pressure;
+        private Integer humidity;
+        private Double dewPoint;
+
+        @SerializedName("visibility")
+        private Integer visibility;
 
         public Double getTemp() {
             return temp;
@@ -69,5 +75,38 @@ public class Weather {
         public void setTemp(Double temp) {
             this.temp = temp;
         }
+
+        public Double getPressure() {
+            return pressure;
+        }
+
+        public void setPressure(Double pressure) {
+            this.pressure = pressure;
+        }
+
+        public Integer getHumidity() {
+            return humidity;
+        }
+
+        public void setHumidity(Integer humidity) {
+            this.humidity = humidity;
+        }
+
+        public Double getDewPoint() {
+            return dewPoint;
+        }
+
+        public void setDewPoint(Double dewPoint) {
+            this.dewPoint = dewPoint;
+        }
+
+        public Integer getVisibility() {
+            return visibility;
+        }
+
+        public void setVisibility(Integer visibility) {
+            this.visibility = visibility;
+        }
     }
+
 }
