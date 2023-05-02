@@ -1,69 +1,84 @@
 package com.weather.weatherapp;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SettingsParser {
-    private static final String FILE_NAME = "weather_settings.properties";
 
-    private Properties properties;
-    private Context context;
+    private static final String SHARED_PREFERENCES_NAME = "weather_settings";
+    private static final String TEMPERATURE_UNITS_KEY = "temperatureUnits";
+    private static final String REFRESH_FREQUENCY_KEY = "refreshFrequency";
+    private static final String FAVORITE_CITIES_KEY = "favoriteCities";
 
-    public SettingsParser(Context context) throws IOException {
-        this.context = context;
-        properties = new Properties();
-        // check if settings file exists if not create it with default values
-        loadProperties(context);
-        if (properties.isEmpty()) {
-            properties.setProperty("temperatureUnits", "CELSIUS");
-            properties.setProperty("refreshFrequency", "1");
-            properties.setProperty("cities", "");
-            saveProperties(context);
+    private final SharedPreferences sharedPreferences;
+
+    public SettingsParser(Context context) {
+        sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+
+        if (!sharedPreferences.contains(TEMPERATURE_UNITS_KEY)) {
+            setUnits("CELSIUS");
+        }
+
+        if (!sharedPreferences.contains(REFRESH_FREQUENCY_KEY)) {
+            setFrequency(1);
+        }
+
+        if (!sharedPreferences.contains(FAVORITE_CITIES_KEY)) {
+            setFavoriteCities(new String[]{});
         }
     }
 
-    public void setUnits(String selectedUnits) {
-        if (!selectedUnits.equals("CELSIUS") && !selectedUnits.equals("FAHRENHEIT") && !selectedUnits.equals("KELVIN"))
-            return;
-
-        properties.setProperty("temperatureUnits", selectedUnits);
-        saveProperties();
-    }
-
-    public void setFrequency(int selectedFrequency) {
-        properties.setProperty("refreshFrequency", String.valueOf(selectedFrequency));
-        saveProperties();
+    public void setUnits(String temperatureUnits) {
+        sharedPreferences.edit().putString(TEMPERATURE_UNITS_KEY, temperatureUnits).apply();
     }
 
     public String getUnits() {
-        return properties.getProperty("temperatureUnits");
+        return sharedPreferences.getString(TEMPERATURE_UNITS_KEY, "CELSIUS");
+    }
+
+    public void setFrequency(int refreshFrequency) {
+        sharedPreferences.edit().putInt(REFRESH_FREQUENCY_KEY, refreshFrequency).apply();
     }
 
     public int getFrequency() {
-        return Integer.parseInt(properties.getProperty("refreshFrequency"));
+        return sharedPreferences.getInt(REFRESH_FREQUENCY_KEY, 1);
     }
 
-    private void loadProperties(Context context) throws IOException {
-        FileInputStream inputStream = context.openFileInput(FILE_NAME);
-        properties.load(inputStream);
-        inputStream.close();
-    }
+    public void setFavoriteCities(String[] favoriteCities) {
+        StringBuilder stringBuilder = new StringBuilder();
 
-    private void saveProperties(Context context) throws IOException {
-        FileOutputStream outputStream = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
-        properties.store(outputStream, null);
-        outputStream.close();
-    }
-
-    private void saveProperties() {
-        try {
-            saveProperties(context);
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (int i = 0; i < favoriteCities.length; i++) {
+            stringBuilder.append(favoriteCities[i]);
+            if (i < favoriteCities.length - 1) {
+                stringBuilder.append(",");
+            }
         }
+
+        sharedPreferences.edit().putString(FAVORITE_CITIES_KEY, stringBuilder.toString()).apply();
+    }
+
+    public String[] getFavoriteCities() {
+        String favoriteCitiesString = sharedPreferences.getString(FAVORITE_CITIES_KEY, "");
+        return favoriteCitiesString.split(",");
+    }
+
+    public void addCity(String city) {
+        String[] favoriteCities = getFavoriteCities();
+        String[] newFavoriteCities = new String[favoriteCities.length + 1];
+        System.arraycopy(favoriteCities, 0, newFavoriteCities, 0, favoriteCities.length);
+        newFavoriteCities[favoriteCities.length] = city;
+        setFavoriteCities(newFavoriteCities);
+    }
+
+    public void removeCity(String city) {
+        String[] favoriteCities = getFavoriteCities();
+        List<String> newFavoriteCitiesList = new ArrayList<>(Arrays.asList(favoriteCities));
+        newFavoriteCitiesList.remove(city);
+        String[] newFavoriteCities = newFavoriteCitiesList.toArray(new String[0]);
+        setFavoriteCities(newFavoriteCities);
     }
 }

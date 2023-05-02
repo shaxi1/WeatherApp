@@ -9,10 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Spinner;
 
-import org.apache.commons.configuration2.ex.ConfigurationException;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Arrays;
 
 public class SettingsFragment extends Fragment {
@@ -34,11 +30,7 @@ public class SettingsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        try {
-            settingsParser = new SettingsParser(requireContext());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        settingsParser = new SettingsParser(requireContext());
     }
 
     @Override
