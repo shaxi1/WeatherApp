@@ -1,6 +1,9 @@
 package com.weather.weatherapp;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -51,6 +54,16 @@ public class SettingsFragment extends Fragment {
     private void configureAddCityFeature(View view) {
         Button addCityButton = view.findViewById(R.id.btnAddCity);
         addCityButton.setOnClickListener(v -> {
+            // check internet connection
+            ConnectivityManager cm = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkCapabilities nc = cm.getNetworkCapabilities(cm.getActiveNetwork());
+            boolean isConnected = nc != null && nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+            if (!isConnected) {
+                Alerter alerter = new Alerter(requireContext());
+                alerter.noInternetConnectionCannotAddCityAlert();
+                return;
+            }
+
             EditText cityEditText = view.findViewById(R.id.etCityName);
             String cityName = cityEditText.getText().toString();
             if (cityName.isEmpty()) {

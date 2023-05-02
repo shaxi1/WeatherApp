@@ -24,5 +24,17 @@ public class Alerter {
         dialog.show();
     }
 
+    public void noInternetConnectionCannotAddCityAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Cannot add city without internet connection")
+                .setTitle("No internet connection")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 
 }
