@@ -86,8 +86,6 @@ public class SettingsFragment extends Fragment {
                 }
             });
         });
-
-        // TODO: handle enter button
     }
 
     private void configureSaveButton(View view) {
