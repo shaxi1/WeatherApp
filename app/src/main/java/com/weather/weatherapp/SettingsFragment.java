@@ -20,7 +20,7 @@ public class SettingsFragment extends Fragment {
     private Spinner unitsSpinner;
     private Spinner frequencySpinner;
     private SettingsParser settingsParser;
-    private WeatherApiClient weatherApiClient;
+    private WeatherApi weatherApi;
 
 
     public SettingsFragment() {
@@ -36,7 +36,7 @@ public class SettingsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         settingsParser = new SettingsParser(requireContext());
-        weatherApiClient = new WeatherApiClient();
+        weatherApi = new WeatherApi();
     }
 
     @Override
@@ -58,8 +58,8 @@ public class SettingsFragment extends Fragment {
             ConnectivityManager cm = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkCapabilities nc = cm.getNetworkCapabilities(cm.getActiveNetwork());
             boolean isConnected = nc != null && nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+            Alerter alerter = new Alerter(requireContext());
             if (!isConnected) {
-                Alerter alerter = new Alerter(requireContext());
                 alerter.noInternetConnectionCannotAddCityAlert();
                 return;
             }
@@ -71,8 +71,20 @@ public class SettingsFragment extends Fragment {
                 return;
             }
 
-            if (weatherApiClient.cityIsCorrect(cityName))
-                settingsParser.addCity(cityName);
+            weatherApi.cityIsCorrect(cityName, new OnCityCheckListener() {
+                @Override
+                public void onCityCheckSuccess() {
+                    settingsParser.addCity(cityName);
+                    alerter.cityAddedAlert(cityName);
+                    System.out.println("City added");
+                }
+
+                @Override
+                public void onCityCheckFailure() {
+                    alerter.cityNotFoundAlert(cityName);
+                    System.out.println("City not found");
+                }
+            });
         });
 
         // TODO: handle enter button

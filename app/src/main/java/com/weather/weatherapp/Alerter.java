@@ -36,5 +36,28 @@ public class Alerter {
         dialog.show();
     }
 
+    public void cityAddedAlert(String cityName) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("City " + cityName + " added")
+                .setTitle("Success")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
+
+    public void cityNotFoundAlert(String cityName) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("City " + cityName + " not found")
+                .setTitle("Error")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 }
