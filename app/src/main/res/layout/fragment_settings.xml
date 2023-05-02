@@ -1,33 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/settings_fragment"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
     tools:context=".SettingsFragment">
 
-    <Spinner
-        android:id="@+id/unitsSpinner"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/etCityName"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_gravity="center"
-        android:entries="@array/units_array"
-        android:layout_marginBottom="75dp"/>
+        android:layout_marginTop="5dp"
+        android:textAlignment="center"
+        android:inputType="text"
+        android:hint="Enter city name" />
 
-    <Spinner
-        android:id="@+id/frequencySpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_gravity="center"
-        android:entries="@array/frequency_array" />
+    <Button
+        android:id="@+id/btnAddCity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Add city" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:text=" Set Units"/>
+
+            <Spinner
+                android:id="@+id/unitsSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:entries="@array/units_array" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:text="Set Refresh Rate"/>
+
+            <Spinner
+                android:id="@+id/frequencySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:entries="@array/frequency_array" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/save_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_marginBottom="32dp"
-        android:text="Save" />
+        android:layout_marginTop="16dp"
+        android:text="Save settings" />
 
-
-</FrameLayout>
+</LinearLayout>

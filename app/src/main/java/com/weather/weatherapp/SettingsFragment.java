@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.util.Arrays;
@@ -40,8 +41,25 @@ public class SettingsFragment extends Fragment {
 
         setDefaultSpinnerValues(view);
         configureSaveButton(view);
+        configureAddCityFeature(view);
 
         return view;
+    }
+
+    private void configureAddCityFeature(View view) {
+        Button addCityButton = view.findViewById(R.id.btnAddCity);
+        addCityButton.setOnClickListener(v -> {
+            EditText cityEditText = view.findViewById(R.id.etCityName);
+            String cityName = cityEditText.getText().toString();
+            if (cityName.isEmpty()) {
+                cityEditText.setError("City name cannot be empty");
+                return;
+            }
+
+            // TODO: check if city exists with api
+            settingsParser.addCity(cityName);
+        });
+        // TODO: handle enter button
     }
 
     private void configureSaveButton(View view) {
