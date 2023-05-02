@@ -17,6 +17,7 @@ public class SettingsFragment extends Fragment {
     private Spinner unitsSpinner;
     private Spinner frequencySpinner;
     private SettingsParser settingsParser;
+    private WeatherApiClient weatherApiClient;
 
 
     public SettingsFragment() {
@@ -32,6 +33,7 @@ public class SettingsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         settingsParser = new SettingsParser(requireContext());
+        weatherApiClient = new WeatherApiClient();
     }
 
     @Override
@@ -56,9 +58,10 @@ public class SettingsFragment extends Fragment {
                 return;
             }
 
-            // TODO: check if city exists with api
-            settingsParser.addCity(cityName);
+            if (weatherApiClient.cityIsCorrect(cityName))
+                settingsParser.addCity(cityName);
         });
+
         // TODO: handle enter button
     }
 

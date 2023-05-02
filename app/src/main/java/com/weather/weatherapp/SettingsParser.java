@@ -67,6 +67,8 @@ public class SettingsParser {
     }
 
     public void addCity(String city) {
+        if (cityIsAFavoriteCity(city)) return;
+
         String[] favoriteCities = getFavoriteCities();
         String[] newFavoriteCities = new String[favoriteCities.length + 1];
         System.arraycopy(favoriteCities, 0, newFavoriteCities, 0, favoriteCities.length);
@@ -74,7 +76,18 @@ public class SettingsParser {
         setFavoriteCities(newFavoriteCities);
     }
 
+    private boolean cityIsAFavoriteCity(String city) {
+        for (String favoriteCity : getFavoriteCities()) {
+            if (favoriteCity.equals(city)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void removeCity(String city) {
+        if (!cityIsAFavoriteCity(city)) return;
+
         String[] favoriteCities = getFavoriteCities();
         List<String> newFavoriteCitiesList = new ArrayList<>(Arrays.asList(favoriteCities));
         newFavoriteCitiesList.remove(city);

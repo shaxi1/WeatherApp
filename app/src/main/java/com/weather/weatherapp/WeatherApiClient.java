@@ -4,6 +4,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WeatherApiClient {
+    /* example api key */
+    private final String api_key = "ca73cc503f58a5b4e8fbd70703351ce8";
 
     public WeatherApiClient() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -13,4 +15,9 @@ public class WeatherApiClient {
     }
 
 
+    public boolean cityIsCorrect(String cityName) {
+
+
+        return true;
+    }
 }
