@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -35,7 +36,7 @@ public class SettingsFragment extends Fragment {
 
         try {
             settingsParser = new SettingsParser(requireContext());
-        } catch (ConfigurationException | FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -46,29 +47,39 @@ public class SettingsFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_settings, container, false);
 
         setDefaultSpinnerValues(view);
+        configureSaveButton(view);
 
         return view;
+    }
+
+    private void configureSaveButton(View view) {
+        Button saveButton = view.findViewById(R.id.save_button);
+        saveButton.setOnClickListener(v -> {
+            String selectedUnits = unitsSpinner.getSelectedItem().toString();
+            String selectedFrequency = frequencySpinner.getSelectedItem().toString();
+
+            settingsParser.setUnits(selectedUnits);
+            settingsParser.setFrequency(Integer.parseInt(selectedFrequency));
+        });
     }
 
     private void setDefaultSpinnerValues(View view) {
         unitsSpinner = view.findViewById(R.id.unitsSpinner);
         frequencySpinner = view.findViewById(R.id.frequencySpinner);
 
-        try {
-            String units = settingsParser.getUnits();
-            int frequency = settingsParser.getFrequency();
+        String units = settingsParser.getUnits();
+        int frequency = settingsParser.getFrequency();
 
-            Resources res = getResources();
-            String[] unitsArray = res.getStringArray(R.array.units_array);
-            String[] frequencyArray = res.getStringArray(R.array.frequency_array);
+        Resources res = getResources();
+        String[] unitsArray = res.getStringArray(R.array.units_array);
+//            System.out.println(Arrays.toString(unitsArray));
+        String[] frequencyArray = res.getStringArray(R.array.frequency_array);
 
-            int unitsPosition = Arrays.asList(unitsArray).indexOf(units);
-            int frequencyPosition = Arrays.asList(frequencyArray).indexOf(String.valueOf(frequency));
+        int unitsPosition = Arrays.asList(unitsArray).indexOf(units);
+//            System.out.println(unitsPosition);
+        int frequencyPosition = Arrays.asList(frequencyArray).indexOf(String.valueOf(frequency));
 
-            unitsSpinner.setSelection(unitsPosition);
-            frequencySpinner.setSelection(frequencyPosition);
-        } catch (ConfigurationException | IOException e) {
-            throw new RuntimeException(e);
-        }
+        unitsSpinner.setSelection(unitsPosition);
+        frequencySpinner.setSelection(frequencyPosition);
     }
 }

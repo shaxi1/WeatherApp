@@ -1,57 +1,69 @@
 package com.weather.weatherapp;
 
 import android.content.Context;
-import android.content.res.Resources;
 
-import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 public class SettingsParser {
-    private final PropertiesConfiguration config;
-    private final BufferedReader reader;
-    private final BufferedWriter writer;
+    private static final String FILE_NAME = "weather_settings.properties";
 
+    private Properties properties;
+    private Context context;
 
-    public SettingsParser(Context context) throws ConfigurationException, FileNotFoundException {
-        Resources resources = context.getResources();
-        this.reader = new BufferedReader(new InputStreamReader(resources.openRawResource(R.raw.weather_settings), StandardCharsets.UTF_8));
-        this.writer = new BufferedWriter(new OutputStreamWriter(context.openFileOutput("weather_settings.properties", Context.MODE_PRIVATE), StandardCharsets.UTF_8));
-        this.config = new PropertiesConfiguration();
+    public SettingsParser(Context context) throws IOException {
+        this.context = context;
+        properties = new Properties();
+        // check if settings file exists if not create it with default values
+        loadProperties(context);
+        if (properties.isEmpty()) {
+            properties.setProperty("temperatureUnits", "CELSIUS");
+            properties.setProperty("refreshFrequency", "1");
+            properties.setProperty("cities", "");
+            saveProperties(context);
+        }
     }
 
-    public int getFrequency() throws ConfigurationException, IOException {
-        config.read(reader);
-        return config.getInt("refreshFrequency", 1);
-    }
-
-    public String getUnits() throws ConfigurationException, IOException {
-        config.read(reader);
-        return config.getString("temperatureUnits", "CELSIUS");
-    }
-
-    public void setFrequency(int frequency) throws ConfigurationException, IOException {
-        config.read(reader);
-
-        config.setProperty("refreshFrequency", frequency);
-        config.write(writer);
-    }
-
-    public void setUnits(String units) throws ConfigurationException, IOException {
-        if (!units.equals("CELSIUS") && !units.equals("FAHRENHEIT") && !units.equals("KELVIN"))
+    public void setUnits(String selectedUnits) {
+        if (!selectedUnits.equals("CELSIUS") && !selectedUnits.equals("FAHRENHEIT") && !selectedUnits.equals("KELVIN"))
             return;
 
-        config.read(reader);
-
-        config.setProperty("temperatureUnits", units);
-        config.write(writer);
+        properties.setProperty("temperatureUnits", selectedUnits);
+        saveProperties();
     }
 
+    public void setFrequency(int selectedFrequency) {
+        properties.setProperty("refreshFrequency", String.valueOf(selectedFrequency));
+        saveProperties();
+    }
+
+    public String getUnits() {
+        return properties.getProperty("temperatureUnits");
+    }
+
+    public int getFrequency() {
+        return Integer.parseInt(properties.getProperty("refreshFrequency"));
+    }
+
+    private void loadProperties(Context context) throws IOException {
+        FileInputStream inputStream = context.openFileInput(FILE_NAME);
+        properties.load(inputStream);
+        inputStream.close();
+    }
+
+    private void saveProperties(Context context) throws IOException {
+        FileOutputStream outputStream = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+        properties.store(outputStream, null);
+        outputStream.close();
+    }
+
+    private void saveProperties() {
+        try {
+            saveProperties(context);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
