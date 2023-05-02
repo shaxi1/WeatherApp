@@ -17,22 +17,23 @@ public class MainActivity extends AppCompatActivity {
         HomeFragment homeFragment = HomeFragment.newInstance();
         DetailsFragment detailsFragment = DetailsFragment.newInstance();
         NextDaysFragment nextDaysFragment = NextDaysFragment.newInstance();
+        SettingsFragment settingsFragment = SettingsFragment.newInstance();
 
         setCurrentFragment(homeFragment);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.home_fragment:
+                case R.id.nav_home:
                     setCurrentFragment(homeFragment);
                     break;
-                case R.id.details_fragment:
+                case R.id.nav_details:
                     setCurrentFragment(detailsFragment);
                     break;
-                case R.id.settings_fragment:
-                    setCurrentFragment(SettingsFragment.newInstance());
+                case R.id.nav_settings:
+                    setCurrentFragment(settingsFragment);
                     break;
-                case R.id.next_days_fragment:
+                case R.id.nav_next_days:
                     setCurrentFragment(nextDaysFragment);
                     break;
             }
