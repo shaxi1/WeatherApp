@@ -45,6 +45,9 @@ public class SettingsParser {
     }
 
     public void setUnits(String units) throws ConfigurationException, IOException {
+        if (!units.equals("CELSIUS") && !units.equals("FAHRENHEIT") && !units.equals("KELVIN"))
+            return;
+
         config.read(reader);
 
         config.setProperty("temperatureUnits", units);
