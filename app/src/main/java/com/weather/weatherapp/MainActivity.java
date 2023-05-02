@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
 
         setCurrentFragment(homeFragment);
 
-        //create bottomnavigationview
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -29,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.details_fragment:
                     setCurrentFragment(detailsFragment);
+                    break;
+                case R.id.settings_fragment:
+                    setCurrentFragment(SettingsFragment.newInstance());
                     break;
                 case R.id.next_days_fragment:
                     setCurrentFragment(nextDaysFragment);

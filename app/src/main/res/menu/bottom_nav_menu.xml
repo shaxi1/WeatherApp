@@ -16,4 +16,9 @@
         android:title="NextDays"
         android:icon="@drawable/ic_next_days" />
 
+    <item
+        android:id="@+id/nav_settings"
+        android:title="Settings"
+        android:icon="@drawable/ic_settings" />
+
 </menu>
