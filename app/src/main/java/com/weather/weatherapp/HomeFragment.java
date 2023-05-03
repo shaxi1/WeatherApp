@@ -71,7 +71,8 @@ public class HomeFragment extends Fragment {
                         updateViews(weather, selectedCity);
                         alerter.dataCouldBeOutdated(weatherStorage.getLastModifiedWeather(selectedCity));
                     } else {
-                        alerter.noOfflineDataSaved();
+                        if (!selectedCity.equals(""))
+                            alerter.noOfflineDataSaved();
                     }
                 } else {
                     displayWeatherForCity(selectedCity);

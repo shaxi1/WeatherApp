@@ -1,5 +1,8 @@
 package com.weather.weatherapp;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -55,7 +58,21 @@ public class NextDaysFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedCity = (String) parent.getItemAtPosition(position);
-                displayWeatherForCity(selectedCity);
+                if (!isNetworkAvailable()) {
+                    WeatherStorage weatherStorage = new WeatherStorage(requireContext());
+                    WeatherForecast weatherForecast = weatherStorage.loadCityForecast(selectedCity);
+
+                    Alerter alerter = new Alerter(requireContext());
+                    if (weatherForecast != null) {
+                        updateViews(weatherForecast, selectedCity);
+                        alerter.dataCouldBeOutdated(weatherStorage.getLastModifiedForecast(selectedCity));
+                    } else {
+                        if (!selectedCity.equals(""))
+                            alerter.noOfflineDataSaved();
+                    }
+                } else {
+                    displayWeatherForCity(selectedCity);
+                }
             }
 
             @Override
@@ -63,6 +80,17 @@ public class NextDaysFragment extends Fragment {
                 // do nothing
             }
         });
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
+            return false;
+        }
+        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+        return networkCapabilities != null &&
+                (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
     }
 
     private void displayWeatherForCity(String selectedCity) {
@@ -76,6 +104,9 @@ public class NextDaysFragment extends Fragment {
                 if (response.isSuccessful()) {
                     WeatherForecast weatherForecast = response.body();
                     assert weatherForecast != null;
+
+                    WeatherStorage weatherStorage = new WeatherStorage(requireContext());
+                    weatherStorage.saveCityForecast(selectedCity, weatherForecast);
                     updateViews(weatherForecast, selectedCity);
                 }
             }
