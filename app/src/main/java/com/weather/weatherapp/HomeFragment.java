@@ -207,21 +207,6 @@ public class HomeFragment extends Fragment {
                     .load(iconUrl)
                     .into(imageView);
         }
-//        List<Weather.WeatherElement> weatherElements = weather.getWeather();
-//        if (weatherElements != null && !weatherElements.isEmpty()) {
-//            Weather.WeatherElement weatherElement = weatherElements.get(0);
-//            ImageView imageView = requireView().findViewById(R.id.weather_icon);
-//            String iconUrl = "https://openweathermap.org/img/w/" + weatherElement.getIcon() + ".png";
-//            System.out.println("iconUrl: " + iconUrl);
-//
-//            URL url = new URL(iconUrl);
-//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//            connection.setDoInput(true);
-//            connection.connect();
-//            InputStream input = connection.getInputStream();
-//            Bitmap bitmap = BitmapFactory.decodeStream(input);
-//            imageView.setImageBitmap(bitmap);
-//        }
     }
 
     private String getIconUrl(String iconCode) {
