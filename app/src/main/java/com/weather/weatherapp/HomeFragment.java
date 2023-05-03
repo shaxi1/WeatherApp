@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -46,9 +47,44 @@ public class HomeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        buttonConfigure(view);
         spinnerConfigure(view);
 
         return view;
+    }
+
+    private void buttonConfigure(View view) {
+        Button removeFavoriteCity = view.findViewById(R.id.remove_city_button);
+        removeFavoriteCity.setVisibility(View.INVISIBLE);
+
+        removeFavoriteCity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinner = requireView().findViewById(R.id.spinner_favorite_cities);
+                String selectedCity = (String) spinner.getSelectedItem();
+                if (selectedCity.equals("")) {
+                    return;
+                }
+
+                WeatherStorage weatherStorage = new WeatherStorage(getContext());
+                Weather weather = weatherStorage.loadCityWeather(selectedCity);
+                if (weather != null) {
+                    weatherStorage.deleteCityWeather(selectedCity);
+                    settingsParser.removeCity(selectedCity);
+                    clearTextViews(view);
+                    spinnerConfigure(requireView());
+                }
+            }
+        });
+    }
+
+    private void clearTextViews(View view) {
+        TextView tvCityName = requireView().findViewById(R.id.city_text);
+        tvCityName.setText("");
+        TextView tvMainText = requireView().findViewById(R.id.main_text);
+        tvMainText.setText("");
+        TextView tvTemperature = requireView().findViewById(R.id.temp_text);
+        tvTemperature.setText("");
     }
 
     private void spinnerConfigure(View view) {
@@ -62,6 +98,14 @@ public class HomeFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedCity = (String) parent.getItemAtPosition(position);
+                Button removeCityButton = requireView().findViewById(R.id.remove_city_button);
+                if (!selectedCity.equals(""))
+                    removeCityButton.setVisibility(View.VISIBLE);
+                else {
+                    removeCityButton.setVisibility(View.INVISIBLE);
+                    clearTextViews(requireView());
+                }
+
                 if (!isNetworkAvailable()) {
                     WeatherStorage weatherStorage = new WeatherStorage(getContext());
                     Weather weather = weatherStorage.loadCityWeather(selectedCity);
