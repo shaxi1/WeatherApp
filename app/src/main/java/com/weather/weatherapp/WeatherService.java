@@ -18,6 +18,4 @@ public interface WeatherService {
             @Query("appid") String apiKey
     );
 
-    // TODO: moze naprawic zdjecia
-
 }
