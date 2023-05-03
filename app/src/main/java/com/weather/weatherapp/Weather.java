@@ -14,6 +14,12 @@ public class Weather {
     @SerializedName("main")
     private Main main;
 
+    @SerializedName("visibility")
+    private Integer visibility;
+
+    @SerializedName("wind")
+    private Wind wind;
+
     public String getCod() {
         return cod;
     }
@@ -36,6 +42,22 @@ public class Weather {
 
     public void setMain(Main main) {
         this.main = main;
+    }
+
+    public Integer getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(Integer visibility) {
+        this.visibility = visibility;
+    }
+
+    public Wind getWind() {
+        return wind;
+    }
+
+    public void setWind(Wind wind) {
+        this.wind = wind;
     }
 
     public static class WeatherElement {
@@ -63,10 +85,12 @@ public class Weather {
         private Double temp;
         private Double pressure;
         private Integer humidity;
-        private Double dewPoint;
 
-        @SerializedName("visibility")
-        private Integer visibility;
+        @SerializedName("temp_min")
+        private Double tempMin;
+
+        @SerializedName("temp_max")
+        private Double tempMax;
 
         public Double getTemp() {
             return temp;
@@ -92,21 +116,41 @@ public class Weather {
             this.humidity = humidity;
         }
 
-        public Double getDewPoint() {
-            return dewPoint;
+        public Double getTempMin() {
+            return tempMin;
         }
 
-        public void setDewPoint(Double dewPoint) {
-            this.dewPoint = dewPoint;
+        public void setTempMin(Double tempMin) {
+            this.tempMin = tempMin;
         }
 
-        public Integer getVisibility() {
-            return visibility;
+        public Double getTempMax() {
+            return tempMax;
         }
 
-        public void setVisibility(Integer visibility) {
-            this.visibility = visibility;
+        public void setTempMax(Double tempMax) {
+            this.tempMax = tempMax;
         }
     }
 
+    public static class Wind {
+        private Double speed;
+        private Integer deg;
+
+        public Double getSpeed() {
+            return speed;
+        }
+
+        public void setSpeed(Double speed) {
+            this.speed = speed;
+        }
+
+        public Integer getDeg() {
+            return deg;
+        }
+
+        public void setDeg(Integer deg) {
+            this.deg = deg;
+        }
+    }
 }
