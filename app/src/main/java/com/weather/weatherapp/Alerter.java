@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 
+import java.util.Date;
+
 public class Alerter {
     private Context context;
     public Alerter(Context context) {
@@ -65,6 +67,18 @@ public class Alerter {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("Couldn't fetch data")
                 .setTitle("Error")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void dataCouldBeOutdated(Date lastUpdate) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Data from: " + lastUpdate.toString())
+                .setTitle("Data might be outdated")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                     }
