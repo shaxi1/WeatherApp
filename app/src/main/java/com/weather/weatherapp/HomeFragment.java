@@ -11,13 +11,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
