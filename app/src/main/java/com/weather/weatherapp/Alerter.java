@@ -86,4 +86,16 @@ public class Alerter {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    public void noOfflineDataSaved() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("No offline data saved")
+                .setTitle("Error")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 }

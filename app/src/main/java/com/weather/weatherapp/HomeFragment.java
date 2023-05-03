@@ -1,5 +1,8 @@
 package com.weather.weatherapp;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -59,7 +62,20 @@ public class HomeFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedCity = (String) parent.getItemAtPosition(position);
-                displayWeatherForCity(selectedCity);
+                if (!isNetworkAvailable()) {
+                    WeatherStorage weatherStorage = new WeatherStorage(getContext());
+                    Weather weather = weatherStorage.loadCityWeather(selectedCity);
+
+                    Alerter alerter = new Alerter(getContext());
+                    if (weather != null) {
+                        updateViews(weather, selectedCity);
+                        alerter.dataCouldBeOutdated(weatherStorage.getLastModifiedWeather(selectedCity));
+                    } else {
+                        alerter.noOfflineDataSaved();
+                    }
+                } else {
+                    displayWeatherForCity(selectedCity);
+                }
             }
 
             @Override
@@ -68,6 +84,18 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
+            return false;
+        }
+        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+        return networkCapabilities != null &&
+                (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
+    }
+
 
     private void displayWeatherForCity(String cityName) {
         final String API_KEY = "ca73cc503f58a5b4e8fbd70703351ce8";
@@ -79,8 +107,10 @@ public class HomeFragment extends Fragment {
             public void onResponse(Call<Weather> call, Response<Weather> response) {
                 if (response.isSuccessful()) {
                     Weather weather = response.body();
-                    // TODO: also update and save forecast
                     assert weather != null;
+
+                    WeatherStorage weatherStorage = new WeatherStorage(getContext());
+                    weatherStorage.saveCityWeather(cityName, weather);
                     updateViews(weather, cityName);
                 }
             }
