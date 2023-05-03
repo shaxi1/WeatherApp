@@ -1,5 +1,6 @@
 package com.weather.weatherapp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
@@ -135,7 +136,7 @@ public class DetailsFragment extends Fragment {
         TextView tvWindSpeed = requireView().findViewById(R.id.wind_speed_text);
         tvWindSpeed.setText("Wind Speed " + weather.getWind().getSpeed() + " m/s");
         TextView tvVisibility = requireView().findViewById(R.id.visibility_text);
-        tvVisibility.setText("Visiblity " + weather.getVisibility() + " m");
+        tvVisibility.setText("Visibility " + weather.getVisibility() + " m");
         TextView tvPressure = requireView().findViewById(R.id.pressure_text);
         tvPressure.setText("Pressure " + weather.getMain().getPressure() + " hPa");
     }
