@@ -13,8 +13,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 import retrofit2.Call;
@@ -45,6 +43,12 @@ public class HomeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        spinnerConfigure(view);
+
+        return view;
+    }
+
+    private void spinnerConfigure(View view) {
         Spinner spinner = view.findViewById(R.id.spinner_favorite_cities);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, settingsParser.getFavoriteCities());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -55,7 +59,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedCity = (String) parent.getItemAtPosition(position);
-//                // call the method to display weather for the selected city
                 displayWeatherForCity(selectedCity);
             }
 
@@ -64,10 +67,6 @@ public class HomeFragment extends Fragment {
                 // do nothing
             }
         });
-
-        // other code for initializing and setting up views
-
-        return view;
     }
 
     private void displayWeatherForCity(String cityName) {
@@ -81,15 +80,15 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Weather weather = response.body();
                     // TODO: also update and save forecast
+                    assert weather != null;
                     updateViews(weather, cityName);
-                } else {
-                    // handle error
                 }
             }
 
             @Override
             public void onFailure(Call<Weather> call, Throwable t) {
-                // handle error
+                Alerter alerter = new Alerter(requireContext());
+                alerter.dataFetchErrorAlert();
             }
         });
     }
@@ -107,17 +106,17 @@ public class HomeFragment extends Fragment {
         temp = TemperatureConverter.convert(temp, units);
         tvTemperature.setText(temp + " " + units);
 
-
-        List<Weather.WeatherElement> weatherElements = weather.getWeather();
-        if (weatherElements != null && !weatherElements.isEmpty()) {
-            Weather.WeatherElement weatherElement = weatherElements.get(0); // retrieve the first WeatherElement object
-            String iconUrl = "http://openweathermap.org/img/w/" + weatherElement.getIcon() + ".png";
-            System.out.println("iconUrl: " + iconUrl);
-            ImageView imageView = requireView().findViewById(R.id.weather_icon);
-            Glide.with(this)
-                    .load(iconUrl)
-                    .into(imageView);
-        }
+        // TODO: fix icon loading
+//        List<Weather.WeatherElement> weatherElements = weather.getWeather();
+//        if (weatherElements != null && !weatherElements.isEmpty()) {
+//            Weather.WeatherElement weatherElement = weatherElements.get(0); // retrieve the first WeatherElement object
+//            String iconUrl = "http://openweathermap.org/img/w/" + weatherElement.getIcon() + ".png";
+//            System.out.println("iconUrl: " + iconUrl);
+//            ImageView imageView = requireView().findViewById(R.id.weather_icon);
+//            Glide.with(this)
+//                    .load(iconUrl)
+//                    .into(imageView);
+//        }
     }
 
     private String getIconUrl(String iconCode) {

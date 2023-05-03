@@ -60,4 +60,16 @@ public class Alerter {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    public void dataFetchErrorAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Couldn't fetch data")
+                .setTitle("Error")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 }
