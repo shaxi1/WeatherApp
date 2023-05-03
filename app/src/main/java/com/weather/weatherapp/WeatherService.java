@@ -12,10 +12,10 @@ public interface WeatherService {
     );
 
 
-//    @GET("/forecast")
-//    Call<WeatherForecast> getForecastData(
-//            @Query("q") String cityName,
-//            @Query("appid") String apiKey
-//    );
+    @GET("forecast")
+    Call<WeatherForecast> getForecastData(
+            @Query("q") String cityName,
+            @Query("appid") String apiKey
+    );
 
 }
