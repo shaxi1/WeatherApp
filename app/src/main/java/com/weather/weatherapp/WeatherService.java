@@ -18,7 +18,6 @@ public interface WeatherService {
             @Query("appid") String apiKey
     );
 
-    // TODO: moze naprawic zdjecia, dodac guzik do remove favorite city potem i tak zeby tez usuwalo je ze shared preferences
+    // TODO: moze naprawic zdjecia
 
 }
-// usuwanie i inne
