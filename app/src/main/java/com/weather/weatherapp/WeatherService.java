@@ -21,4 +21,4 @@ public interface WeatherService {
     // TODO: updatowac i forecast i weather i zapisywac w storage wszystko, przy kazdym callu i huj, moze naprawic zdjecia, dodac guzik do remove favorite city potem i tak zeby tez usuwalo je ze shared preferences
 
 }
-// forecase, zapisywanie, detale, usuwanie i inne
+// zapisywanie, detale, usuwanie i inne
