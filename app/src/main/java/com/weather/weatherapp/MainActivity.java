@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private volatile Weather weather;
     private volatile WeatherForecast weatherForecast;
     private volatile String cityName;
+    private Handler handler;
+    private Runnable runnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +95,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // data refreshing
-        Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
+        handler = new Handler();
+        runnable = new Runnable() {
             @Override
             public void run() {
                 if (isAppInForeground()) {
@@ -104,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
                 long refreshEveryHours = settingsParser.getFrequency();
                 handler.postDelayed(this, refreshEveryHours * ONE_HOUR_IN_MILISECONDS);
             }
+
         };
 
         // check if any city needs refreshing after when the app was closed
@@ -124,6 +127,20 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(runnable);
+    }
+
+
+    public void updateSpinner() {
+        Spinner spinner = this.findViewById(R.id.spinner_favorite_cities);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, settingsParser.getFavoriteCities());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
     }
 
     private boolean isAppInForeground() {

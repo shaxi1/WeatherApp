@@ -1,6 +1,8 @@
 package com.weather.weatherapp;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
@@ -13,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SettingsFragment extends Fragment {
@@ -75,8 +78,20 @@ public class SettingsFragment extends Fragment {
                 @Override
                 public void onCityCheckSuccess() {
                     settingsParser.addCity(cityName);
-                    alerter.cityAddedAlert(cityName);
                     System.out.println("City added");
+
+//                    Activity parentActivity = getActivity();
+//                    Intent intent = new Intent(parentActivity, MainActivity.class);
+//                    assert parentActivity != null;
+//                    parentActivity.startActivity(intent);
+//                    parentActivity.finish();
+                    // Get a reference to the activity
+
+                    MainActivity activity = (MainActivity) getActivity();
+                    assert activity != null;
+                    activity.updateSpinner();
+
+                    alerter.cityAddedAlert(cityName);
                 }
 
                 @Override

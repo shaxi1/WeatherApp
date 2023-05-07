@@ -101,6 +101,11 @@ public class HomeFragment extends Fragment {
                     weatherStorage.deleteCityWeather(cityName);
                     settingsParser.removeCity(cityName);
                     clearTextViews(view);
+
+                    MainActivity activity = (MainActivity) getActivity();
+                    assert activity != null;
+                    activity.updateSpinner();
+                    removeFavoriteCity.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -113,9 +118,8 @@ public class HomeFragment extends Fragment {
         tvMainText.setText("");
         TextView tvTemperature = view.findViewById(R.id.temp_text);
         tvTemperature.setText("");
-        ImageView imageView = new ImageView(view.getContext());
-        imageView.findViewById(R.id.weather_icon);
-        imageView.setImageResource(0);
+        ImageView imageView = view.findViewById(R.id.weather_icon);
+        imageView.setImageDrawable(null);
     }
 
     private void updateViews(Weather weather, String cityName, View view) throws IOException {
