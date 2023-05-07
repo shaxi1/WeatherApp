@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
         settingsParser = new SettingsParser(this);
         cityName = "";
 
-        setCurrentFragment(homeFragment, null, cityName);
-
         spinnerConfigure();
 
         Bundle args = new Bundle();
@@ -55,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.nav_home:
+                    System.out.println("home navbar");
                     args.putSerializable("weather", (Serializable) weather);
                     setCurrentFragment(homeFragment, args, cityName);
                     break;
@@ -131,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Alerter alerter = new Alerter(context);
                     if (weather != null) {
+                        System.out.println("Weather loaded from storage");
                         recreateFragment();
 
                         alerter.dataCouldBeOutdated(weatherStorage.getLastModifiedWeather(selectedCity));
@@ -140,12 +140,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     // set WeatherForecast and Weather and recreate fragment
-                    downloadWeather(selectedCity, context);
-                    downloadWeatherForecast(selectedCity, context);
-                    System.out.println("selected city: " + selectedCity);
-                    System.out.println("weather: " + weather.getWind().getSpeed());
-
-                    recreateFragment();
+                    downloadWeather(selectedCity, context, false);
+                    downloadWeatherForecast(selectedCity, context, true);
                 }
             }
 
@@ -157,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void downloadWeatherForecast(String selectedCity, Context context) {
+    private void downloadWeatherForecast(String selectedCity, Context context, boolean recreateFragment) {
         WeatherService weatherService =  WeatherClient.getRetrofitInstance().create(WeatherService.class);
         Call<WeatherForecast> call = weatherService.getForecastData(selectedCity, API_KEY);
 
@@ -172,6 +168,9 @@ public class MainActivity extends AppCompatActivity {
                     weatherStorage.saveCityForecast(selectedCity, weatherForecastTemp);
                     weatherForecast = weatherForecastTemp;
                     cityName = selectedCity;
+
+                    if (recreateFragment)
+                        recreateFragment();
                 }
             }
 
@@ -183,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void downloadWeather(String selectedCity, Context context) {
+    private void downloadWeather(String selectedCity, Context context, Boolean recreateFragment) {
         WeatherService weatherService =  WeatherClient.getRetrofitInstance().create(WeatherService.class);
         Call<Weather> call = weatherService.getWeatherData(selectedCity, API_KEY);
 
@@ -198,6 +197,9 @@ public class MainActivity extends AppCompatActivity {
                     weatherStorage.saveCityWeather(selectedCity, weatherTemp);
                     weather = weatherTemp;
                     cityName = selectedCity;
+
+                    if (recreateFragment)
+                        recreateFragment();
                 }
             }
 
@@ -226,10 +228,11 @@ public class MainActivity extends AppCompatActivity {
             Bundle args = new Bundle();
             args.putSerializable("weather", (Serializable) weather);
             setCurrentFragment(detailsFragment, args, cityName);
-        } else {
+        } else if (bottomNavigationView.getSelectedItemId() == R.id.nav_home) {
             HomeFragment homeFragment = HomeFragment.newInstance();
             Bundle args = new Bundle();
             args.putSerializable("weather", (Serializable) weather);
+            System.out.println("City Name from class field: " + cityName);
             setCurrentFragment(homeFragment, args, cityName);
         }
     }
@@ -300,7 +303,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setCurrentFragment(Fragment fragment, Bundle args, String selectedCity) {
         if (args != null)
-            args.putString("selectedCity", selectedCity);
+            args.putString("cityName", selectedCity);
+        System.out.println("setCurrentFragment fksdjhfsdkfshkdfhjkfhjk cityName: " + cityName);
 
         fragment.setArguments(args);
         getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, fragment).commit();

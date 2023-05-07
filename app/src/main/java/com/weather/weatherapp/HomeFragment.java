@@ -22,6 +22,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.SyncFailedException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,6 +60,7 @@ public class HomeFragment extends Fragment {
 
         Bundle args = getArguments();
         if (args != null && args.containsKey("weather")) {
+            System.out.println("HomeFragment args not null and contain weather");
             weather = new Weather();
             weather = (Weather) args.getSerializable("weather");
             cityName = args.getString("cityName");
@@ -67,12 +69,16 @@ public class HomeFragment extends Fragment {
         Button removeCityButton = view.findViewById(R.id.remove_city_button);
         if (weather != null && cityName != null && !cityName.isEmpty()) {
             try {
+                System.out.println("HomeFragment Updating views");
                 updateViews(weather, cityName, view);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             removeCityButton.setVisibility(View.VISIBLE);
         } else {
+            if (weather == null)
+                System.out.println("HomeFragment weather is null");
+
             removeCityButton.setVisibility(View.INVISIBLE);
             clearTextViews(view);
         }

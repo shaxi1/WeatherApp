@@ -2,9 +2,10 @@ package com.weather.weatherapp;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Weather implements java.io.Serializable {
+public class Weather implements Serializable {
     @SerializedName("cod")
     private String cod;
 
