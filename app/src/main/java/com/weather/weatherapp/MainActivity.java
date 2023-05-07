@@ -72,10 +72,17 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+        if (savedInstanceState != null) {
+            weather = (Weather) savedInstanceState.getSerializable("weather");
+            weatherForecast = (WeatherForecast) savedInstanceState.getSerializable("weatherForecast");
+            cityName = savedInstanceState.getString("cityName");
+            bottomNavigationView.setSelectedItemId(savedInstanceState.getInt("selectedItemId"));
+        }
+
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkCapabilities nc = cm.getNetworkCapabilities(cm.getActiveNetwork());
         boolean isConnected = nc != null && nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-        if (!isConnected) {
+        if (!isConnected && savedInstanceState == null) {
             Alerter alerter = new Alerter(this);
             alerter.noInternetConnectionAlert();
         }
@@ -110,6 +117,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("selectedCity", cityName);
+        outState.putSerializable("weather", weather);
+        outState.putSerializable("weatherForecast", weatherForecast);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        outState.putInt("selectedItemId", bottomNavigationView.getSelectedItemId());
     }
 
     private void spinnerConfigure() {
