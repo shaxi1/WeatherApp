@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Weather {
+public class Weather implements java.io.Serializable {
     @SerializedName("cod")
     private String cod;
 

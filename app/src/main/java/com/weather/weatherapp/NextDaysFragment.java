@@ -21,6 +21,8 @@ import retrofit2.Response;
 
 public class NextDaysFragment extends Fragment {
     private SettingsParser settingsParser;
+    private WeatherForecast weatherForecast;
+    private String cityName;
 
     public NextDaysFragment() {
         // Required empty public constructor
@@ -43,90 +45,41 @@ public class NextDaysFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_next_days, container, false);
 
-        spinnerConfigure(view);
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("weatherForecast")) {
+            weatherForecast = new WeatherForecast();
+            weatherForecast = (WeatherForecast) args.getSerializable("weatherForecast");
+            cityName = args.getString("cityName");
+        }
+
+        if (weatherForecast != null && cityName != null && !cityName.isEmpty()) {
+            updateViews(weatherForecast, cityName, view);
+        } else {
+            clearTextViews(view);
+        }
 
         return view;
     }
 
-    private void spinnerConfigure(View view) {
-        Spinner spinner = view.findViewById(R.id.spinner_favorite_cities);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, settingsParser.getFavoriteCities());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+    private void clearTextViews(View requireView) {
+        final int forecastNumber = 5;
+        final String textViewIdPrefix = "forecast_";
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedCity = (String) parent.getItemAtPosition(position);
-                if (!isNetworkAvailable()) {
-                    WeatherStorage weatherStorage = new WeatherStorage(requireContext());
-                    WeatherForecast weatherForecast = weatherStorage.loadCityForecast(selectedCity);
-
-                    Alerter alerter = new Alerter(requireContext());
-                    if (weatherForecast != null) {
-                        updateViews(weatherForecast, selectedCity);
-                        alerter.dataCouldBeOutdated(weatherStorage.getLastModifiedForecast(selectedCity));
-                    } else {
-                        if (!selectedCity.equals(""))
-                            alerter.noOfflineDataSaved();
-                    }
-                } else {
-                    displayWeatherForCity(selectedCity);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // do nothing
-            }
-        });
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager == null) {
-            return false;
+        for (int i = 0; i < forecastNumber; i++) {
+            String textViewId = textViewIdPrefix + (i + 1);
+            TextView textView = requireView.findViewById(getResources().getIdentifier(textViewId, "id", requireView.getContext().getPackageName()));
+            textView.setText("");
         }
-        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-        return networkCapabilities != null &&
-                (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                        networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
     }
 
-    private void displayWeatherForCity(String selectedCity) {
-        final String API_KEY = "ca73cc503f58a5b4e8fbd70703351ce8";
-        WeatherService weatherService =  WeatherClient.getRetrofitInstance().create(WeatherService.class);
-        Call<WeatherForecast> call = weatherService.getForecastData(selectedCity, API_KEY);
-
-        call.enqueue(new Callback<WeatherForecast>() {
-            @Override
-            public void onResponse(Call<WeatherForecast> call, Response<WeatherForecast> response) {
-                if (response.isSuccessful()) {
-                    WeatherForecast weatherForecast = response.body();
-                    assert weatherForecast != null;
-
-                    WeatherStorage weatherStorage = new WeatherStorage(requireContext());
-                    weatherStorage.saveCityForecast(selectedCity, weatherForecast);
-                    updateViews(weatherForecast, selectedCity);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<WeatherForecast> call, Throwable t) {
-                Alerter alerter = new Alerter(requireContext());
-                alerter.dataFetchErrorAlert();
-            }
-        });
-    }
-
-    private void updateViews(WeatherForecast weatherForecast, String selectedCity) {
+    private void updateViews(WeatherForecast weatherForecast, String selectedCity, View view) {
         final int forecastNumber = 5;
         final String textViewIdPrefix = "forecast_";
 
         List<WeatherForecast.Forecast> forecastList = weatherForecast.getForecastList();
         for (int i = 0; i < forecastNumber; i++) {
             String textViewId = textViewIdPrefix + (i + 1);
-            TextView textView = requireView().findViewById(getResources().getIdentifier(textViewId, "id", requireContext().getPackageName()));
+            TextView textView = view.findViewById(getResources().getIdentifier(textViewId, "id", view.getContext().getPackageName()));
             // forecastText: date: city name, main weather, temp, units
             Double temp = forecastList.get(i).getMain().getTemp();
             temp = TemperatureConverter.convert(temp, settingsParser.getUnits());
@@ -134,6 +87,5 @@ public class NextDaysFragment extends Fragment {
             textView.setText(forecastText);
         }
     }
-
 
 }
