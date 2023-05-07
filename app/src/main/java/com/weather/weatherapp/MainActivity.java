@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
@@ -19,6 +21,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
         spinnerConfigure();
 
+        Spinner spinner = this.findViewById(R.id.spinner_favorite_cities);
+        int spinnerPosition = spinner.getSelectedItemPosition();
         Bundle args = new Bundle();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -92,7 +97,9 @@ public class MainActivity extends AppCompatActivity {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                dataRefresh();
+                if (isAppInForeground()) {
+                    dataRefresh();
+                }
                 SettingsParser settingsParser = new SettingsParser(getApplicationContext());
                 long refreshEveryHours = settingsParser.getFrequency();
                 handler.postDelayed(this, refreshEveryHours * ONE_HOUR_IN_MILISECONDS);
@@ -118,6 +125,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    private boolean isAppInForeground() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningProcesses = activityManager.getRunningAppProcesses();
+        if (runningProcesses != null && !runningProcesses.isEmpty()) {
+            for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
+                if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                        && processInfo.processName.equals(getPackageName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

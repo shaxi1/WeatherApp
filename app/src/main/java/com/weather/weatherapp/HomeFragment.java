@@ -71,10 +71,11 @@ public class HomeFragment extends Fragment {
             try {
                 System.out.println("HomeFragment Updating views");
                 updateViews(weather, cityName, view);
+                System.out.println("Making remove button visible");
+                removeCityButton.setVisibility(View.VISIBLE);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            removeCityButton.setVisibility(View.VISIBLE);
         } else {
             if (weather == null)
                 System.out.println("HomeFragment weather is null");
@@ -90,15 +91,10 @@ public class HomeFragment extends Fragment {
 
     private void buttonConfigure(View view) {
         Button removeFavoriteCity = view.findViewById(R.id.remove_city_button);
-        removeFavoriteCity.setVisibility(View.INVISIBLE);
 
         removeFavoriteCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (cityName == null || cityName.isEmpty()) {
-                    return;
-                }
-
                 WeatherStorage weatherStorage = new WeatherStorage(view.getContext());
                 Weather weather = weatherStorage.loadCityWeather(cityName);
                 if (weather != null) {
