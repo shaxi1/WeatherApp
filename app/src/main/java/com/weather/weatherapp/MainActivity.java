@@ -127,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
                 if (!isNetworkAvailable()) {
                     WeatherStorage weatherStorage = new WeatherStorage(context);
                     weather = weatherStorage.loadCityWeather(selectedCity);
+                    weatherForecast = weatherStorage.loadCityForecast(selectedCity);
+                    cityName = selectedCity;
 
                     Alerter alerter = new Alerter(context);
                     if (weather != null) {
