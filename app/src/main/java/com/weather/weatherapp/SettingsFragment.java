@@ -80,13 +80,6 @@ public class SettingsFragment extends Fragment {
                     settingsParser.addCity(cityName);
                     System.out.println("City added");
 
-//                    Activity parentActivity = getActivity();
-//                    Intent intent = new Intent(parentActivity, MainActivity.class);
-//                    assert parentActivity != null;
-//                    parentActivity.startActivity(intent);
-//                    parentActivity.finish();
-                    // Get a reference to the activity
-
                     MainActivity activity = (MainActivity) getActivity();
                     assert activity != null;
                     activity.updateSpinner();
