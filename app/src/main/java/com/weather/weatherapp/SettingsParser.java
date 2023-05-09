@@ -2,10 +2,12 @@ package com.weather.weatherapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.SystemClock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
 
 public class SettingsParser {
 
@@ -13,6 +15,7 @@ public class SettingsParser {
     private static final String TEMPERATURE_UNITS_KEY = "temperatureUnits";
     private static final String REFRESH_FREQUENCY_KEY = "refreshFrequency";
     private static final String FAVORITE_CITIES_KEY = "favoriteCities";
+    private static final String TIMER_START_TIME_KEY = "timer_elapsed_time";
 
     private final SharedPreferences sharedPreferences;
 
@@ -93,5 +96,17 @@ public class SettingsParser {
         newFavoriteCitiesList.remove(city);
         String[] newFavoriteCities = newFavoriteCitiesList.toArray(new String[0]);
         setFavoriteCities(newFavoriteCities);
+    }
+
+    public void saveStartTime(Timer timer, Context context) {
+        long startTime = 0;
+        if (timer != null) {
+            startTime = SystemClock.elapsedRealtime();
+        }
+        sharedPreferences.edit().putLong(TIMER_START_TIME_KEY, startTime).apply();
+    }
+
+    public long restoreStartTime(Context context) {
+        return sharedPreferences.getLong(TIMER_START_TIME_KEY, 0);
     }
 }

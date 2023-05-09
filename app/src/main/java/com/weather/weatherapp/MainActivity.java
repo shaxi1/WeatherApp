@@ -5,12 +5,11 @@ import androidx.fragment.app.Fragment;
 
 
 import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,6 +21,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,8 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private volatile Weather weather;
     private volatile WeatherForecast weatherForecast;
     private volatile String cityName;
-    private Handler handler;
-    private Runnable runnable;
+    private Timer timer;
+    private boolean isForeground;
+    private long startTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,19 +97,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // data refreshing
-        handler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (isAppInForeground()) {
-                    dataRefresh();
-                }
-                SettingsParser settingsParser = new SettingsParser(getApplicationContext());
-                long refreshEveryHours = settingsParser.getFrequency();
-                handler.postDelayed(this, refreshEveryHours * ONE_HOUR_IN_MILISECONDS);
-            }
-
-        };
 
         // check if any city needs refreshing after when the app was closed
         WeatherService weatherService =  WeatherClient.getRetrofitInstance().create(WeatherService.class);
@@ -132,9 +121,52 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        handler.removeCallbacks(runnable);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isForeground = true;
+        recreateTimer();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        isForeground = false;
+        pauseTimer();
+        SettingsParser settingsParser = new SettingsParser(getApplicationContext());
+        settingsParser.saveStartTime(timer, this);
+    }
+
+    public void pauseTimer() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+
+            SettingsParser settingsParser = new SettingsParser(getApplicationContext());
+            settingsParser.saveStartTime(timer, this);
+        }
+    }
+
+    public void recreateTimer() {
+        if (isForeground && timer == null) {
+            SettingsParser settingsParser = new SettingsParser(getApplicationContext());
+            startTime = settingsParser.restoreStartTime(this);
+
+            long elapsedTime = SystemClock.elapsedRealtime() - startTime;
+            long refreshEveryHours = settingsParser.getFrequency();
+            long period = refreshEveryHours * ONE_HOUR_IN_MILISECONDS;
+            long delay = Math.max(0, period - (elapsedTime % period));
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    dataRefresh();
+                }
+            }, delay, period);
+        }
+    }
 
     public void updateSpinner() {
         Spinner spinner = this.findViewById(R.id.spinner_favorite_cities);
