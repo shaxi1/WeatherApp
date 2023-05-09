@@ -80,13 +80,6 @@ public class SettingsFragment extends Fragment {
                     settingsParser.addCity(cityName);
                     System.out.println("City added");
 
-//                    Activity parentActivity = getActivity();
-//                    Intent intent = new Intent(parentActivity, MainActivity.class);
-//                    assert parentActivity != null;
-//                    parentActivity.startActivity(intent);
-//                    parentActivity.finish();
-                    // Get a reference to the activity
-
                     MainActivity activity = (MainActivity) getActivity();
                     assert activity != null;
                     activity.updateSpinner();
@@ -108,6 +101,11 @@ public class SettingsFragment extends Fragment {
         saveButton.setOnClickListener(v -> {
             String selectedUnits = unitsSpinner.getSelectedItem().toString();
             String selectedFrequency = frequencySpinner.getSelectedItem().toString();
+
+            MainActivity activity = (MainActivity) getActivity();
+            assert activity != null;
+            activity.pauseTimer();
+            activity.recreateTimer();
 
             settingsParser.setUnits(selectedUnits);
             settingsParser.setFrequency(Integer.parseInt(selectedFrequency));
