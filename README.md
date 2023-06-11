@@ -1,7 +1,5 @@
 # WeatherApp
-Mobile weather app for checking basic, detailed and forecast weather for cities added to favorites. </br>
-Weather data is stored for offline use and above that user can specify refresh frequency for it. App is also supported on tablets. </br>
-App gets all the data from [OpenWeatherMap Api](https://openweathermap.org/api). </br></br>
+This is a mobile application that allows users to conveniently check basic, detailed, and forecast weather information for their favorite cities. The app not only stores weather data for offline use but also provides the option for users to set the refresh frequency. Additionally, the app is compatible with tablets. All the weather data in the application is obtained from the [OpenWeatherMap Api](https://openweathermap.org/api). </br></br>
 Libraries used:
 * [Retrofit](https://square.github.io/retrofit/) for JSON parsing and API queries
 * Android Material Design for bottom navigation bar and icons
